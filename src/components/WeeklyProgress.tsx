@@ -3,11 +3,13 @@
 import { useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../lib/db';
-import { NEETCODE_150, SD_TOPICS, PROJECT_MILESTONES, WEEK_PLAN } from '../lib/seedData';
+import { NEETCODE_150, SD_TOPICS, PROJECT_MILESTONES, getWeekPatterns } from '../lib/seedData';
 import { getWeekStart, getDaysInRange, getWeekNumber } from '../lib/utils';
+import { useStartDate } from '../lib/hooks';
 
 export default function WeeklyProgress() {
-  const currentWeek = getWeekNumber();
+  const { startDate } = useStartDate();
+  const currentWeek = getWeekNumber(startDate);
   const weekStart = getWeekStart(new Date());
   const weekEnd = new Date(weekStart);
   weekEnd.setDate(weekEnd.getDate() + 6);
@@ -25,7 +27,7 @@ export default function WeeklyProgress() {
     if (!dsaLogs || !sdLogs || !allDsaLogs) return null;
 
     // DSA: problems solved this week vs expected
-    const weekPatterns = WEEK_PLAN[currentWeek] || [];
+    const weekPatterns = getWeekPatterns(currentWeek);
     const weekProblems = NEETCODE_150.filter(p => weekPatterns.includes(p.pattern));
     const solvedThisWeek = new Set(dsaLogs.filter(l => l.status === 'solved' || l.status === 'solved-with-help').map(l => l.problemId));
     
@@ -63,7 +65,7 @@ export default function WeeklyProgress() {
   return (
     <div className="p-4 space-y-4">
       <h2 className="text-lg font-semibold text-zinc-100">Weekly Progress</h2>
-      <p className="text-xs text-zinc-400">Week {currentWeek} of 12 • {weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – {weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
+      <p className="text-xs text-zinc-400">Week {currentWeek}{currentWeek <= 12 ? ' of 12' : ' (extended)'} • {weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – {weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
 
       {/* DSA */}
       <div className="bg-zinc-800 rounded-lg p-4 space-y-2">

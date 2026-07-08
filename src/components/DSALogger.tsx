@@ -2,9 +2,10 @@
 
 import { useState, useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, type DSAProblemLog } from '../lib/db';
-import { NEETCODE_150, PATTERNS, WEEK_PLAN } from '../lib/seedData';
+import { db } from '../lib/db';
+import { NEETCODE_150, PATTERNS, getWeekPatterns } from '../lib/seedData';
 import { getToday, getWeekNumber } from '../lib/utils';
+import { useStartDate } from '../lib/hooks';
 
 interface DSALoggerProps {
   onClose: () => void;
@@ -12,7 +13,8 @@ interface DSALoggerProps {
 
 export default function DSALogger({ onClose }: DSALoggerProps) {
   const today = getToday();
-  const currentWeek = getWeekNumber();
+  const { startDate } = useStartDate();
+  const currentWeek = getWeekNumber(startDate);
   const [selectedPattern, setSelectedPattern] = useState<string>('');
   const [search, setSearch] = useState('');
   const [selectedProblem, setSelectedProblem] = useState<number | null>(null);
@@ -37,7 +39,7 @@ export default function DSALogger({ onClose }: DSALoggerProps) {
 
   const solvedCount = solvedIds.size;
 
-  const suggestedPatterns = WEEK_PLAN[currentWeek] || [];
+  const suggestedPatterns = getWeekPatterns(currentWeek);
 
   const filteredProblems = useMemo(() => {
     let problems = NEETCODE_150;
@@ -229,9 +231,14 @@ export default function DSALogger({ onClose }: DSALoggerProps) {
                     <p className="text-sm text-zinc-200">{problem?.name}</p>
                     <p className="text-[10px] text-zinc-400">{log.status} • {log.timeTaken}min</p>
                   </div>
-                  <button onClick={() => markIncomplete(log.id!)} className="text-[10px] text-amber-400 underline">
-                    Mark incomplete
-                  </button>
+                  <div className="flex gap-2">
+                    <button onClick={() => markIncomplete(log.id!)} className="text-[10px] text-amber-400 underline">
+                      Incomplete
+                    </button>
+                    <button onClick={() => db.dsaProblemLogs.delete(log.id!)} className="text-[10px] text-red-400 underline">
+                      Remove
+                    </button>
+                  </div>
                 </div>
               );
             })}

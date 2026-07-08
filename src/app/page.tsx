@@ -9,6 +9,7 @@ import ProblemTracker from '../components/ProblemTracker';
 import SDChecklist from '../components/SDChecklist';
 import CalendarHeatmap from '../components/CalendarHeatmap';
 import StreakBadge from '../components/StreakBadge';
+import Settings from '../components/Settings';
 
 type Tab = 'today' | 'weekly' | 'problems' | 'sysdesign' | 'heatmap';
 
@@ -16,12 +17,15 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<Tab>('today');
   const [showDSA, setShowDSA] = useState(false);
   const [showSD, setShowSD] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   return (
     <div className="flex flex-col h-screen bg-zinc-900">
       {/* Top bar with streak */}
       <div className="flex items-center justify-between px-4 py-2 bg-zinc-900 border-b border-zinc-800">
-        <span className="text-sm font-semibold text-zinc-100">PrepTracker</span>
+        <button onClick={() => setShowSettings(true)} className="text-sm font-semibold text-zinc-100 flex items-center gap-1">
+          PrepTracker <span className="text-zinc-500 text-xs">⚙</span>
+        </button>
         <StreakBadge />
       </div>
 
@@ -61,6 +65,7 @@ export default function Home() {
       {/* Fullscreen modals */}
       {showDSA && <DSALogger onClose={() => setShowDSA(false)} />}
       {showSD && <SystemDesignLogger onClose={() => setShowSD(false)} />}
+      {showSettings && <Settings onClose={() => setShowSettings(false)} />}
     </div>
   );
 }

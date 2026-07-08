@@ -44,12 +44,19 @@ export interface StreakData {
   isRestDay: boolean;
 }
 
+export interface AppSettings {
+  id?: number;
+  key: string;
+  value: string;
+}
+
 const db = new Dexie('PrepTrackerDB') as Dexie & {
   routineBlocks: EntityTable<RoutineBlock, 'id'>;
   dayLogs: EntityTable<DayLog, 'id'>;
   dsaProblemLogs: EntityTable<DSAProblemLog, 'id'>;
   systemDesignLogs: EntityTable<SystemDesignLog, 'id'>;
   streakData: EntityTable<StreakData, 'id'>;
+  appSettings: EntityTable<AppSettings, 'id'>;
 };
 
 db.version(1).stores({
@@ -60,7 +67,31 @@ db.version(1).stores({
   streakData: '++id, &date',
 });
 
+db.version(2).stores({
+  routineBlocks: '++id, order',
+  dayLogs: '++id, &date',
+  dsaProblemLogs: '++id, date, problemId, incomplete',
+  systemDesignLogs: '++id, date, incomplete, topic, milestone',
+  streakData: '++id, &date',
+  appSettings: '++id, &key',
+});
+
 export { db };
+
+// Settings helpers
+export async function getSetting(key: string): Promise<string | null> {
+  const entry = await db.appSettings.where('key').equals(key).first();
+  return entry?.value ?? null;
+}
+
+export async function setSetting(key: string, value: string): Promise<void> {
+  const entry = await db.appSettings.where('key').equals(key).first();
+  if (entry) {
+    await db.appSettings.update(entry.id!, { value });
+  } else {
+    await db.appSettings.add({ key, value });
+  }
+}
 
 // Initialize default routine blocks
 export async function initDefaultBlocks() {

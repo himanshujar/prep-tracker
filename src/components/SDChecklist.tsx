@@ -58,6 +58,17 @@ export default function SDChecklist() {
     }
   }
 
+  async function uncheckTopic(topic: string) {
+    const logs = await db.systemDesignLogs.where('topic').equals(topic).toArray();
+    await db.systemDesignLogs.bulkDelete(logs.map(l => l.id!));
+    setLoggingTopic(null);
+  }
+
+  async function uncheckMilestone(milestone: string) {
+    const logs = await db.systemDesignLogs.where('milestone').equals(milestone).toArray();
+    await db.systemDesignLogs.bulkDelete(logs.map(l => l.id!));
+  }
+
   const topicGroups = [
     { label: 'HLD Fundamentals', items: SD_TOPICS.slice(0, 7) },
     { label: 'LLD Fundamentals', items: SD_TOPICS.slice(7, 14) },
@@ -132,6 +143,14 @@ export default function SDChecklist() {
 
                       {loggingTopic === topic && (
                         <div className="ml-6 mt-1 mb-2 p-3 bg-zinc-800 rounded-lg border border-zinc-700 space-y-2">
+                          {covered && (
+                            <button
+                              onClick={() => uncheckTopic(topic)}
+                              className="w-full bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/30 text-xs font-medium py-1.5 rounded transition-colors"
+                            >
+                              ✗ Uncheck
+                            </button>
+                          )}
                           <input
                             type="text"
                             value={notes}
@@ -158,13 +177,13 @@ export default function SDChecklist() {
 
       {activeSection === 'milestones' && (
         <div className="space-y-1">
-          <p className="text-[10px] text-zinc-500">Tap to mark milestone as done</p>
+          <p className="text-[10px] text-zinc-500">Tap to toggle milestone done/undone</p>
           {PROJECT_MILESTONES.map(milestone => {
             const done = completedMilestones.has(milestone);
             return (
               <button
                 key={milestone}
-                onClick={() => !done && logMilestone(milestone)}
+                onClick={() => done ? uncheckMilestone(milestone) : logMilestone(milestone)}
                 className={`w-full flex items-center gap-2 px-3 py-2 rounded text-left transition-colors active:scale-[0.98] ${
                   done ? 'bg-green-500/5' : 'hover:bg-zinc-800'
                 }`}
@@ -175,6 +194,7 @@ export default function SDChecklist() {
                 <span className={`text-sm ${done ? 'text-zinc-400' : 'text-zinc-200'}`}>
                   {milestone}
                 </span>
+                {done && <span className="text-[10px] text-red-400 ml-auto">tap to undo</span>}
               </button>
             );
           })}

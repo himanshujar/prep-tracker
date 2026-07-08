@@ -2,12 +2,16 @@ export function getToday(): string {
   return new Date().toISOString().split('T')[0];
 }
 
-export function getWeekNumber(startDate: string = '2026-07-07'): number {
+export function getWeekNumber(startDate: string): number {
   const start = new Date(startDate);
   const now = new Date();
   const diff = now.getTime() - start.getTime();
   const week = Math.floor(diff / (7 * 24 * 60 * 60 * 1000)) + 1;
-  return Math.max(1, Math.min(12, week));
+  return Math.max(1, week); // No upper cap — extends beyond 12
+}
+
+export function getTotalWeeks(): number {
+  return 12; // base plan is 12 weeks, but we allow going beyond
 }
 
 export function formatTime(time: string): string {

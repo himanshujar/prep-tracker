@@ -43,6 +43,14 @@ export const WEEK_PLAN: Record<number, string[]> = {
   12: ['1-D DP', '2-D DP', 'Greedy', 'Intervals'],
 };
 
+// For weeks > 12, cycle through review patterns
+export function getWeekPatterns(week: number): string[] {
+  if (week <= 12) return WEEK_PLAN[week] || [];
+  // Beyond week 12: cycle weeks 9-12 (review phase)
+  const cycleWeek = ((week - 9) % 4) + 9;
+  return WEEK_PLAN[cycleWeek] || [];
+}
+
 export const NEETCODE_150: NeetCodeProblem[] = [
   // Arrays & Hashing
   { id: 1, name: 'Contains Duplicate', pattern: 'Arrays & Hashing', difficulty: 'Easy', link: 'https://leetcode.com/problems/contains-duplicate/' },

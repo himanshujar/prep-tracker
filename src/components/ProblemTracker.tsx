@@ -87,6 +87,13 @@ export default function ProblemTracker() {
     setLogStatus('solved');
   }
 
+  async function uncheckProblem(problemId: number) {
+    // Remove all logs for this problem
+    const logs = await db.dsaProblemLogs.where('problemId').equals(problemId).toArray();
+    await db.dsaProblemLogs.bulkDelete(logs.map(l => l.id!));
+    setLoggingId(null);
+  }
+
   return (
     <div className="p-4 space-y-4">
       <div className="flex items-center justify-between">
@@ -164,6 +171,14 @@ export default function ProblemTracker() {
                     {/* Inline log form */}
                     {loggingId === problem.id && (
                       <div className="ml-6 mt-1 mb-2 p-3 bg-zinc-800 rounded-lg border border-zinc-700 space-y-2">
+                        {(isSolved || isAttempted) && (
+                          <button
+                            onClick={() => uncheckProblem(problem.id)}
+                            className="w-full bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/30 text-xs font-medium py-1.5 rounded transition-colors"
+                          >
+                            ✗ Uncheck (remove all logs for this problem)
+                          </button>
+                        )}
                         <div className="flex gap-1.5">
                           {(['attempted', 'solved', 'solved-with-help'] as const).map(s => (
                             <button
