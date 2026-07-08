@@ -6,10 +6,11 @@ import DSALogger from '../components/DSALogger';
 import SystemDesignLogger from '../components/SystemDesignLogger';
 import WeeklyProgress from '../components/WeeklyProgress';
 import ProblemTracker from '../components/ProblemTracker';
+import SDChecklist from '../components/SDChecklist';
 import CalendarHeatmap from '../components/CalendarHeatmap';
 import StreakBadge from '../components/StreakBadge';
 
-type Tab = 'today' | 'weekly' | 'problems' | 'heatmap';
+type Tab = 'today' | 'weekly' | 'problems' | 'sysdesign' | 'heatmap';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<Tab>('today');
@@ -31,6 +32,7 @@ export default function Home() {
         )}
         {activeTab === 'weekly' && <WeeklyProgress />}
         {activeTab === 'problems' && <ProblemTracker />}
+        {activeTab === 'sysdesign' && <SDChecklist />}
         {activeTab === 'heatmap' && <CalendarHeatmap />}
       </main>
 
@@ -38,8 +40,9 @@ export default function Home() {
       <nav className="flex border-t border-zinc-800 bg-zinc-900 safe-area-bottom">
         {([
           { id: 'today', label: 'Today', icon: '📋' },
-          { id: 'weekly', label: 'Weekly', icon: '📊' },
-          { id: 'problems', label: 'Problems', icon: '💻' },
+          { id: 'problems', label: 'DSA', icon: '💻' },
+          { id: 'sysdesign', label: 'SD/AI', icon: '🧠' },
+          { id: 'weekly', label: 'Stats', icon: '📊' },
           { id: 'heatmap', label: 'Activity', icon: '🗓️' },
         ] as const).map(tab => (
           <button
