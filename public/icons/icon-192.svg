@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <rect width="192" height="192" rx="32" fill="#18181b"/>
+  <text x="96" y="120" font-family="system-ui" font-size="80" font-weight="bold" text-anchor="middle" fill="#60a5fa">P</text>
+  <rect x="40" y="140" width="112" height="4" rx="2" fill="#3b82f6"/>
+  <rect x="40" y="140" width="56" height="4" rx="2" fill="#22c55e"/>
+</svg>
